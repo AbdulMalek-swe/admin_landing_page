@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import * as React from "react";
 import { extendTheme, styled } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -87,12 +87,12 @@ function useDemoRouter(initialPath) {
   return router;
 }
 
-const Skeleton = styled("div")(({ theme, height }) => ({
-  backgroundColor: theme.palette.action.hover,
-  borderRadius: theme.shape.borderRadius,
-  height,
-  content: '" "',
-}));
+// const Skeleton = styled("div")(({ theme, height }) => ({
+//   backgroundColor: theme.palette.action.hover,
+//   borderRadius: theme.shape.borderRadius,
+//   height,
+//   content: '" "',
+// }));
 
 export default function DashboardLayoutBasic(props) {
   const { window, children } = props;
