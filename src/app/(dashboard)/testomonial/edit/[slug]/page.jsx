@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -16,41 +16,61 @@ import "react-quill/dist/quill.snow.css";
 import { privateRequest, publicRequest } from "@/config/axios.config";
 import { errorHandler, responseCheck } from "@/utils/helper";
 import { Toastify } from "@/components/toastify";
-import InfoBox from "../dynamicRoute/infoNav";
-// validate schema
+import InfoBox from "@/components/dynamicRoute/infoNav";
+//  validate schema is already defined above. Here's how you might use it in your form:
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   short_des: Yup.string().required("Short description is required"),
   content: Yup.string().required("Content is required"),
   image: Yup.mixed().required("Image is required"),
-  // category_id: Yup.number().required("Category is required"),
   category: Yup.object().nullable().required("category selection is required"),
 });
 
-const CreatePostForm = () => {
-  const [category, setCategory] = React.useState([]);
-  // submit form using formik
+const EditPostForm = ({ params }) => {
+  const [loading, setLoading] = useState(false);
+  const [blog, setBlog] = useState({});
+  const [category, setCategory] = React.useState({});
+  const [singleCategory, setSingleCategory] = React.useState({});
+  // fetch single blog
+  const fetchBlog = useCallback(async () => {
+    try {
+      const response = await publicRequest.get(`blog/${params?.slug}`);
+      if (responseCheck(response)) {
+        setBlog(response.data?.data);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [params?.slug]);
+  useEffect(() => {
+    fetchBlog();
+  }, []);
+  // submit blog edited form
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      title: "",
-      short_des: "",
-      content: "",
-      image: null,
-      category: null,
+      title: blog?.title || "",
+      short_des: blog?.short_des || "",
+      content: blog?.content || "",
+      image: blog?.image || null,
+      category: { ...singleCategory, label: singleCategory?.name || "" },
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
-      // create form data and append it to the request body  (Note: replace '/blog' with your API endpoint)  // this assumes you have a '/blog' endpoint for creating a new blog post
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("short_des", values.short_des);
       formData.append("content", values.content);
       formData.append("image", values.image);
       formData.append("category_id", values?.category?.category_id);
-
+      formData.append("_method", "PUT");
       try {
-        const response = await privateRequest.post("admin/blog", formData);
+        const response = await privateRequest.post(
+          `/blog/${params?.slug}`,
+          formData
+        );
         console.log(response);
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
@@ -58,28 +78,36 @@ const CreatePostForm = () => {
       } catch (error) {
         console.error("Error submitting form:", error);
       }
+      // resetForm()
     },
   });
   // fetch category data
   const fetchCategory = React.useCallback(async () => {
     try {
-      const response = await privateRequest.get("admin/category");
+      const categoryId = blog?.category_id;
+      const response = await publicRequest.get(`category`);
+      console.log(response, "this is categ ");
       if (responseCheck(response)) {
         const result = response?.data?.data?.data;
+        const newValue = result.find(
+          (item) => item?.category_id === categoryId
+        );
         const data = result.map((item) => ({ ...item, label: item?.name }));
+        console.log(result, "this i scategroy area");
         setCategory(data);
+        setSingleCategory({ ...newValue, label: newValue?.name || "" });
       }
     } catch (error) {
       errorHandler(error);
     }
-  }, []);
+  }, [blog]);
   React.useEffect(() => {
     fetchCategory();
-  }, []);
+  }, [blog]);
   return (
-    <Suspense fallback={<CircularProgress />}>
-      <InfoBox page="Create Blog" href="/blog/blog" hrefName="View Blog" />
-      <Box sx={{ mx: "auto", p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
+    <Box>
+      <InfoBox page="Edit Blog" href="/blog/blog" hrefName="View Blog" />
+      <Box sx={{ p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
         <Typography variant="h4" gutterBottom>
           Create New Post
         </Typography>
@@ -105,7 +133,6 @@ const CreatePostForm = () => {
               />
             )}
           />
-          {/* title  */}
           <TextField
             fullWidth
             id="title"
@@ -148,11 +175,26 @@ const CreatePostForm = () => {
               {formik.errors.content}
             </Typography>
           )}
-          <ProfilePicUpload formik={formik} />
-          {formik.touched.image && formik.errors.image && (
-            <Typography color="error">{formik.errors.image}</Typography>
-          )}
 
+          {/* <Button
+            variant="contained"
+            component="label"
+            sx={{ mt: 2, mb: 2, width: "100%", cursor: "pointer" }}
+          >
+            Upload Image
+            <input
+              type="file"
+              hidden
+              accept="image/*"
+              onChange={(event) => {
+                formik.setFieldValue("image", event.currentTarget.files[0]);
+              }}
+            />
+          </Button> */}
+          {/* {formik.touched.image && formik.errors.image && (
+            <Typography color="error">{formik.errors.image}</Typography>
+          )} */}
+          <ProfilePicUpload blog={blog} formik={formik} />
           <Button
             color="primary"
             variant="contained"
@@ -164,24 +206,27 @@ const CreatePostForm = () => {
           </Button>
         </form>
       </Box>
-    </Suspense>
+    </Box>
   );
 };
 
-export default CreatePostForm;
+export default EditPostForm;
 
-const ProfilePicUpload = ({ formik }) => {
-  const [imagePreview, setImagePreview] = React.useState(null);
+const ProfilePicUpload = ({ formik, blog }) => {
+  const [imagePreview, setImagePreview] = useState(null);
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file) { 
-      formik.setFieldValue("image", file); 
+    if (file) {
+      // console.log(event);
+      formik.setFieldValue("image", file);
+      // formik.setFieldValue("profilePic", file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: "auto" ,mt:2 }}>
+    <Box sx={{ maxWidth: 400, mx: "auto", mt: 2 }}>
       <Box
         sx={{
           display: "flex",
@@ -192,7 +237,10 @@ const ProfilePicUpload = ({ formik }) => {
         <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
           <Avatar
             sx={{ width: 120, height: 120, mb: 2 }}
-            src={imagePreview}
+            src={
+              imagePreview ||
+              `${process.env.NEXT_PUBLIC_BASE_API}${blog?.image}`
+            }
             alt="Profile Pic"
             name="profile"
           />

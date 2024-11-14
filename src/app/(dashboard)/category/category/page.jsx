@@ -3,75 +3,68 @@ import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import { Box, CircularProgress, Container } from "@mui/material";
-import { privateRequest, publicRequest } from "@/config/axios.config";
+import { privateRequest  } from "@/config/axios.config";
 import InfoBox from "@/components/dynamicRoute/infoNav";
 import Image from "next/image";
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Toastify } from "@/components/toastify";
-import { errorHandler, responseCheck } from "@/utils/helper";
+import { responseCheck } from "@/utils/helper";
 import Link from "next/link";
 import EditIcon from "@mui/icons-material/Edit";
 
 const paginationModel = { page: 0, pageSize: 5 };
 
 export default function DataTable() {
-  const [blog, setBlog] = React.useState([]);
+  const [category, setcategory] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-  // fetch faqs
-  const fetchFaqs = React.useCallback(async () => {
+  // fetch Category
+  const fetchCategory = React.useCallback(async () => {
     try {
       setLoading(false); // show loading state
-      const response = await publicRequest.get("contact");
+      const response = await privateRequest.get("category");
       const result = response?.data?.data?.data;
-      const data = result.map((item) => ({ ...item, id: item.contact_id }));
-      console.log(data);
-      setBlog(data);
+      console.log(result);
+      const data = result.map((item) => ({ ...item, id: item?.category_id }));
+      setcategory(data);
     } catch (error) {
       errorHandler(error);
       setLoading(false);
     }
   }, []);
   React.useEffect(() => {
-    fetchFaqs();
+    fetchCategory();
   }, []);
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "email", headerName: "Email", flex: 1 },
-    {
-      field: "phone",
-      headerName: "Phone",
-      type: "string",
-      flex: 1,
-    },
-
-    {
-      field: "message",
-      headerName: "Description",
-      type: "string",
-      flex: 2,
-    },
+    { field: "name", headerName: "Category Name", flex: 2 },
+     
     {
       field: "conten",
       headerName: "Action",
       type: "string",
-      flex: 1.5,
+      flex: 1,
       renderCell: (params) => {
         return (
           <div style={{ wordBreak: "break-all" }}>
+            <Link href={`/category/edit/${params?.row?.category_id}`}>
+              <IconButton color="primary" component="a">
+                <EditIcon />
+              </IconButton>
+            </Link>
             <IconButton
               color="error"
               onClick={async () => {
                 try {
                   const response = await privateRequest.delete(
-                    `contact/${params?.row?.contact_id}`
+                    `category/${params?.row?.category_id}`
                   );
                   if (responseCheck(response)) {
-                    fetchFaqs();
+                    fetchCategory();
                     Toastify.Success(response?.data?.message);
                   }
                 } catch (error) {
-                  
+                  console.log(error);
                   Toastify.Error(error);
                 }
               }}
@@ -98,10 +91,10 @@ export default function DataTable() {
   }
   return (
     <Box>
-      <InfoBox page="Contact" href="/dashboard" hrefName="View Dashboard" />
+      <InfoBox page="Category" href="/category/create" hrefName="Create Category" />
       <Paper sx={{ height: 400, width: "100%", overflowX: "auto" }}>
         <DataGrid
-          rows={blog}
+          rows={category}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[5, 10]}

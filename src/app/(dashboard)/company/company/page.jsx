@@ -22,10 +22,9 @@ export default function DataTable() {
   const fetchFaqs = React.useCallback(async () => {
     try {
       setLoading(false); // show loading state
-      const response = await publicRequest.get("contact");
+      const response = await privateRequest.get("admin/company");
       const result = response?.data?.data?.data;
-      const data = result.map((item) => ({ ...item, id: item.contact_id }));
-      console.log(data);
+      const data = result.map((item) => ({ ...item, id: item.company_id }));
       setBlog(data);
     } catch (error) {
       errorHandler(error);
@@ -37,20 +36,34 @@ export default function DataTable() {
   }, []);
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "email", headerName: "Email", flex: 1 },
+    { field: "title", headerName: "Title", flex: 1 },
+     
     {
-      field: "phone",
-      headerName: "Phone",
+      field: "image",
+      headerName: "Image",
       type: "string",
-      flex: 1,
+      flex: 1.5,
+      renderCell: (params) => {
+        return (
+          <div style={{ wordBreak: "break-all" }}>
+            <Image
+              width={100}
+              height={200}
+              style={{
+                objectFit: "cover",
+                borderRadius: 5,
+                cursor: "pointer",
+                width: "100%",
+                height: "50px",
+              }}
+              src={`${process.env.NEXT_PUBLIC_BASE_API}${params?.row?.image}`}
+              alt="loading"
+            />
+          </div>
+        );
+      },
     },
-
-    {
-      field: "message",
-      headerName: "Description",
-      type: "string",
-      flex: 2,
-    },
+     
     {
       field: "conten",
       headerName: "Action",
@@ -59,20 +72,26 @@ export default function DataTable() {
       renderCell: (params) => {
         return (
           <div style={{ wordBreak: "break-all" }}>
+            <Link href={`/blog/edit/${params?.row?.blog_id}`}>
+              <IconButton color="primary" component="a">
+                <EditIcon />
+              </IconButton>
+            </Link>
             <IconButton
               color="error"
               onClick={async () => {
                 try {
                   const response = await privateRequest.delete(
-                    `contact/${params?.row?.contact_id}`
+                    `company/${params?.row?.blog_id}`
                   );
                   if (responseCheck(response)) {
                     fetchFaqs();
                     Toastify.Success(response?.data?.message);
                   }
                 } catch (error) {
-                  
+                  console.log(error);
                   Toastify.Error(error);
+                  errorHandler(error)
                 }
               }}
             >
@@ -98,7 +117,7 @@ export default function DataTable() {
   }
   return (
     <Box>
-      <InfoBox page="Contact" href="/dashboard" hrefName="View Dashboard" />
+      <InfoBox page="Blog" href="/blog/create" hrefName="Create Blog" />
       <Paper sx={{ height: 400, width: "100%", overflowX: "auto" }}>
         <DataGrid
           rows={blog}

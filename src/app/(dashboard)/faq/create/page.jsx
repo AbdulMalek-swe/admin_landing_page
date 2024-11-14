@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { errorHandler, responseCheck } from '@/utils/helper';
-import { publicRequest } from '@/config/axios.config';
+import { privateRequest, publicRequest } from '@/config/axios.config';
 import { Toastify } from '@/components/toastify';
 import InfoBox from '@/components/dynamicRoute/infoNav';
 
@@ -38,7 +38,7 @@ const FAQForm = () => {
       setLoading(true);
       try {
        
-        const response = await publicRequest.post("faq", values);
+        const response = await privateRequest.post("admin/faq", values);
         console.log(response);
         if (responseCheck(response)) {
           setLoading(false);

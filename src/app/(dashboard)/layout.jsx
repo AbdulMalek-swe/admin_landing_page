@@ -31,8 +31,18 @@ const NAVIGATION = [
     icon: <ShoppingCartIcon />,
   },
   {
+    segment: "category/category",
+    title: "Category",
+    icon: <ShoppingCartIcon />,
+  },
+  {
     segment: "faq/faqs",
     title: "Faq",
+    icon: <ShoppingCartIcon />,
+  },
+  {
+    segment: "company/company",
+    title: "Company",
     icon: <ShoppingCartIcon />,
   },
   {

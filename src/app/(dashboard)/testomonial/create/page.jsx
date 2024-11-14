@@ -77,7 +77,7 @@ const CreatePostForm = () => {
     fetchCategory();
   }, []);
   return (
-    <Suspense fallback={<CircularProgress />}>
+    <Box>
       <InfoBox page="Create Blog" href="/blog/blog" hrefName="View Blog" />
       <Box sx={{ mx: "auto", p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
         <Typography variant="h4" gutterBottom>
@@ -164,7 +164,7 @@ const CreatePostForm = () => {
           </Button>
         </form>
       </Box>
-    </Suspense>
+    </Box>
   );
 };
 
