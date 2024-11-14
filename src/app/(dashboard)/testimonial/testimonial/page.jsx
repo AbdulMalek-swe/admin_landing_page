@@ -22,9 +22,10 @@ export default function DataTable() {
   const fetchFaqs = React.useCallback(async () => {
     try {
       setLoading(false); // show loading state
-      const response = await publicRequest.get("blog");
+      const response = await publicRequest.get("testimonial");
       const result = response?.data?.data?.data;
-      const data = result.map((item) => ({ ...item, id: item.blog_id }));
+      console.log(result, "result");
+      const data = result.map((item) => ({ ...item, id: item.id }));
       setBlog(data);
     } catch (error) {
       errorHandler(error);
@@ -36,7 +37,7 @@ export default function DataTable() {
   }, []);
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "title", headerName: "Title", flex: 1 },
+    { field: "name", headerName: "Title", flex: 1 },
     {
       field: "short_des",
       headerName: "Short Description",
@@ -90,7 +91,7 @@ export default function DataTable() {
       renderCell: (params) => {
         return (
           <div style={{ wordBreak: "break-all" }}>
-            <Link href={`/blog/edit/${params?.row?.blog_id}`}>
+            <Link href={`/testimonial/edit/${params?.row?.id}`}>
               <IconButton color="primary" component="a">
                 <EditIcon />
               </IconButton>
@@ -100,7 +101,7 @@ export default function DataTable() {
               onClick={async () => {
                 try {
                   const response = await privateRequest.delete(
-                    `blog/${params?.row?.blog_id}`
+                    `admin/testimonial/${params?.row?.id}`
                   );
                   if (responseCheck(response)) {
                     fetchFaqs();
@@ -134,7 +135,7 @@ export default function DataTable() {
   }
   return (
     <Box>
-      <InfoBox page="Blog" href="/blog/create" hrefName="Create Blog" />
+      <InfoBox page="Testimonial" href="/testimonial/create" hrefName="Create Testimonial" />
       <Paper sx={{ height: 400, width: "100%", overflowX: "auto" }}>
         <DataGrid
           rows={blog}

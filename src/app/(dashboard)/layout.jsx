@@ -8,9 +8,8 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import LayersIcon from "@mui/icons-material/Layers";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { PageContainer } from "@toolpad/core/PageContainer";
-import Grid from "@mui/material/Grid2";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { PageContainer } from "@toolpad/core/PageContainer"; 
+import {   usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, IconButton, TextField, Typography } from "@mui/material";
 import { removeToken } from "@/utils/helper";
@@ -33,6 +32,16 @@ const NAVIGATION = [
   {
     segment: "category/category",
     title: "Category",
+    icon: <ShoppingCartIcon />,
+  },
+  {
+    segment: "project/project",
+    title: "Project",
+    icon: <ShoppingCartIcon />,
+  },
+  {
+    segment: "testimonial/testimonial",
+    title: "Testimonial",
     icon: <ShoppingCartIcon />,
   },
   {

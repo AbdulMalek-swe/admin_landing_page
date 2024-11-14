@@ -11,30 +11,28 @@ import {
   Autocomplete,
   Avatar,
 } from "@mui/material";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { privateRequest, publicRequest } from "@/config/axios.config";
 import { errorHandler, responseCheck } from "@/utils/helper";
 import { Toastify } from "@/components/toastify";
 import InfoBox from "@/components/dynamicRoute/infoNav";
+import { useRouter } from "next/navigation";
 //  validate schema is already defined above. Here's how you might use it in your form:
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
-  short_des: Yup.string().required("Short description is required"),
-  content: Yup.string().required("Content is required"),
   image: Yup.mixed().required("Image is required"),
-  category: Yup.object().nullable().required("category selection is required"),
 });
 
 const EditPostForm = ({ params }) => {
   const [loading, setLoading] = useState(false);
   const [blog, setBlog] = useState({});
-  const [category, setCategory] = React.useState({});
-  const [singleCategory, setSingleCategory] = React.useState({});
+  const router = useRouter();
   // fetch single blog
   const fetchBlog = useCallback(async () => {
     try {
-      const response = await publicRequest.get(`company/${params?.slug}`);
+      const response = await privateRequest.get(
+        `admin/company/${params?.slug}`
+      );
       if (responseCheck(response)) {
         setBlog(response.data?.data);
       }
@@ -52,25 +50,24 @@ const EditPostForm = ({ params }) => {
     enableReinitialize: true,
     initialValues: {
       title: blog?.title || "",
-      short_des: blog?.short_des || "",
-      content: blog?.content || "",
+
       image: blog?.image || null,
-      category: { ...singleCategory, label: singleCategory?.name || "" },
     },
     validationSchema,
     onSubmit: async (values) => {
       const formData = new FormData();
-      formData.append("title", values.title); 
-      formData.append("image", values.image); 
+      formData.append("title", values.title);
+      formData.append("image", values.image);
       formData.append("_method", "PUT");
       try {
         const response = await privateRequest.post(
-          `/company/${params?.slug}`,
+          `/admin/company/${params?.slug}`,
           formData
         );
-        console.log(response);
+
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
+          router.push("/company/company");
         }
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -78,17 +75,21 @@ const EditPostForm = ({ params }) => {
       // resetForm()
     },
   });
-   
+
   return (
     <Box>
-      <InfoBox page="Edit Blog" href="/blog/blog" hrefName="View Blog" />
+      <InfoBox
+        page="Edit Company"
+        href="/company/company"
+        hrefName="View Company"
+      />
       <Box sx={{ p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
         <Typography variant="h4" gutterBottom>
-          Create New Post
+          Update Post
         </Typography>
         <form onSubmit={formik.handleSubmit}>
           {/* combobox for autcomplete component for category id */}
-          
+
           <TextField
             fullWidth
             id="title"
@@ -131,7 +132,6 @@ const ProfilePicUpload = ({ formik, blog }) => {
       setImagePreview(URL.createObjectURL(file));
     }
   };
-
   return (
     <Box sx={{ maxWidth: 400, mx: "auto", mt: 2 }}>
       <Box

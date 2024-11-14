@@ -17,6 +17,7 @@ import { errorHandler, responseCheck } from '@/utils/helper';
 import { privateRequest, publicRequest } from '@/config/axios.config';
 import { Toastify } from '@/components/toastify';
 import InfoBox from '@/components/dynamicRoute/infoNav';
+import { useRouter } from 'next/navigation';
 
 // Validation schema with Yup
 const validationSchema = Yup.object({
@@ -27,6 +28,7 @@ const validationSchema = Yup.object({
 
 const FAQForm = () => {
  const [loading,setLoading] = useState(false);
+ const router = useRouter();
   const formik = useFormik({
     initialValues: {
       question: '',
@@ -43,6 +45,7 @@ const FAQForm = () => {
         if (responseCheck(response)) {
           setLoading(false);
           Toastify.Success(response?.data?.message);  
+          router.push("/faq/faqs");
         }
       } catch (error) {
         console.log(error)

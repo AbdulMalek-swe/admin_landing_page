@@ -17,12 +17,13 @@ import { privateRequest, publicRequest } from "@/config/axios.config";
 import { errorHandler, responseCheck } from "@/utils/helper";
 import { Toastify } from "@/components/toastify";
 import InfoBox from "@/components/dynamicRoute/infoNav";
+import { useRouter } from "next/navigation";
 //  validate schema is already defined above. Here's how you might use it in your form:
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   short_des: Yup.string().required("Short description is required"),
   content: Yup.string().required("Content is required"),
-  image: Yup.mixed().required("Image is required"),
+  // image: Yup.mixed().required("Image is required"),
   category: Yup.object().nullable().required("category selection is required"),
 });
 
@@ -31,10 +32,11 @@ const EditPostForm = ({ params }) => {
   const [blog, setBlog] = useState({});
   const [category, setCategory] = React.useState({});
   const [singleCategory, setSingleCategory] = React.useState({});
+  const router = useRouter();
   // fetch single blog
   const fetchBlog = useCallback(async () => {
     try {
-      const response = await publicRequest.get(`blog/${params?.slug}`);
+      const response = await privateRequest.get(`admin/blog/${params?.slug}`);
       if (responseCheck(response)) {
         setBlog(response.data?.data);
       }
@@ -68,24 +70,26 @@ const EditPostForm = ({ params }) => {
       formData.append("_method", "PUT");
       try {
         const response = await privateRequest.post(
-          `/blog/${params?.slug}`,
+          `admin/blog/${params?.slug}`,
           formData
         );
         console.log(response);
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
+          router.push(`/blog/blog`);
         }
       } catch (error) {
         console.error("Error submitting form:", error);
       }
       // resetForm()
+      formik.resetForm();
     },
   });
   // fetch category data
   const fetchCategory = React.useCallback(async () => {
     try {
       const categoryId = blog?.category_id;
-      const response = await publicRequest.get(`category`);
+      const response = await privateRequest.get(`admin/category`);
       console.log(response, "this is categ ");
       if (responseCheck(response)) {
         const result = response?.data?.data?.data;

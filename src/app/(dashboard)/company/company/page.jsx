@@ -72,7 +72,7 @@ export default function DataTable() {
       renderCell: (params) => {
         return (
           <div style={{ wordBreak: "break-all" }}>
-            <Link href={`/blog/edit/${params?.row?.blog_id}`}>
+            <Link href={`/company/edit/${params?.row?.company_id}`}>
               <IconButton color="primary" component="a">
                 <EditIcon />
               </IconButton>
@@ -82,7 +82,7 @@ export default function DataTable() {
               onClick={async () => {
                 try {
                   const response = await privateRequest.delete(
-                    `company/${params?.row?.blog_id}`
+                    `admin/company/${params?.row?.company_id}`
                   );
                   if (responseCheck(response)) {
                     fetchFaqs();
@@ -117,7 +117,7 @@ export default function DataTable() {
   }
   return (
     <Box>
-      <InfoBox page="Blog" href="/blog/create" hrefName="Create Blog" />
+      <InfoBox page="Company" href="/company/create" hrefName="Create Company" />
       <Paper sx={{ height: 400, width: "100%", overflowX: "auto" }}>
         <DataGrid
           rows={blog}

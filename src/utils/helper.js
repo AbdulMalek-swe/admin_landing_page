@@ -31,7 +31,7 @@ export const getToken = () => {
 
 /* set token */
 export const setToken = (token) => {
-  return setCookie("token", token, 7);
+  return setCookie("token", token, 1);
   // return localStorage.setItem("token", token);
 };
 
@@ -47,6 +47,7 @@ export const responseCheck = (response) => {
     return false;
   }
 };
+ 
 // error handler function 
 export const errorHandler = (error) => {
   if (

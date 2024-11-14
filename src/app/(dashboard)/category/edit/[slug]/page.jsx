@@ -14,9 +14,10 @@ import {
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { errorHandler, responseCheck } from "@/utils/helper";
-import { publicRequest } from "@/config/axios.config";
+import { privateRequest, publicRequest } from "@/config/axios.config";
 import { Toastify } from "@/components/toastify";
 import InfoBox from "@/components/dynamicRoute/infoNav";
+import { useRouter } from "next/navigation";
 
 // Validation schema with Yup
 const validationSchema = Yup.object({
@@ -30,6 +31,7 @@ const CategoryForm = ({params}) => {
   const [loading, setLoading] = useState(false);
   
   const [faqs, setFaqs] = useState({});
+  const router = useRouter();
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -44,6 +46,8 @@ const CategoryForm = ({params}) => {
         if (responseCheck(response)) {
           setLoading(false);
           Toastify.Success(response?.data?.message);
+          router.push(`/category/category`);
+          // router.push(`/dashboard/category/${params?.slug}`);
         }
       } catch (error) {
         console.log(error);
@@ -57,8 +61,8 @@ const CategoryForm = ({params}) => {
    const fetchFaqs = useCallback(async () => {
     try {
       
-      const response = await publicRequest.get(`category/${params?.slug}`);
-      console.log(response,"--------------------->");
+      const response = await privateRequest.get(`admin/category/${params?.slug}`);
+      // console.log(response,"--------------------->");
       setFaqs(response.data?.data );
     } catch (error) {
       errorHandler(error);

@@ -12,12 +12,14 @@ import { Toastify } from "@/components/toastify";
 import { responseCheck } from "@/utils/helper";
 import Link from "next/link";
 import EditIcon from "@mui/icons-material/Edit";
+import { useRouter } from "next/navigation";
 
 const paginationModel = { page: 0, pageSize: 5 };
 
 export default function DataTable() {
   const [blog, setBlog] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+ 
   // fetch faqs
   const fetchFaqs = React.useCallback(async () => {
     try {

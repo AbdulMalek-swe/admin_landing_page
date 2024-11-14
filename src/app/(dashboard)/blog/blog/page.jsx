@@ -4,15 +4,13 @@ import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import { Box, CircularProgress, Container } from "@mui/material";
 import { privateRequest, publicRequest } from "@/config/axios.config";
-import InfoBox from "@/components/dynamicRoute/infoNav";
-import Image from "next/image";
+import InfoBox from "@/components/dynamicRoute/infoNav"; 
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Toastify } from "@/components/toastify";
 import { errorHandler, responseCheck } from "@/utils/helper";
 import Link from "next/link";
 import EditIcon from "@mui/icons-material/Edit";
-
 const paginationModel = { page: 0, pageSize: 5 };
 
 export default function DataTable() {
@@ -51,9 +49,8 @@ export default function DataTable() {
       renderCell: (params) => {
         return (
           <div style={{ wordBreak: "break-all" }}>
-            <Image
-              width={100}
-              height={200}
+            <img
+             
               style={{
                 objectFit: "cover",
                 borderRadius: 5,
@@ -61,6 +58,7 @@ export default function DataTable() {
                 width: "100%",
                 height: "50px",
               }}
+              className="object-fit  w-full h-full"
               src={`${process.env.NEXT_PUBLIC_BASE_API}${params?.row?.image}`}
               alt="loading"
             />
@@ -100,7 +98,7 @@ export default function DataTable() {
               onClick={async () => {
                 try {
                   const response = await privateRequest.delete(
-                    `blog/${params?.row?.blog_id}`
+                    `admin/blog/${params?.row?.blog_id}`
                   );
                   if (responseCheck(response)) {
                     fetchFaqs();

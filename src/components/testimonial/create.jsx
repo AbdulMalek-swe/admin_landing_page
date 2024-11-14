@@ -15,20 +15,20 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { privateRequest, publicRequest } from "@/config/axios.config";
 import { errorHandler, responseCheck } from "@/utils/helper";
-import { Toastify } from "@/components/toastify";
-import InfoBox from "../dynamicRoute/infoNav";
+import { Toastify } from "@/components/toastify"; 
+import InfoBox from "@/components/dynamicRoute/infoNav";
+import { useRouter } from "next/navigation";
 // validate schema
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
-  short_des: Yup.string().required("Short description is required"),
-  content: Yup.string().required("Content is required"),
+  short_des: Yup.string().required("Short description is required"), 
   image: Yup.mixed().required("Image is required"),
-  // category_id: Yup.number().required("Category is required"),
-  category: Yup.object().nullable().required("category selection is required"),
+  // category_id: Yup.number().required("Category is required"), 
 });
 
 const CreatePostForm = () => {
   const [category, setCategory] = React.useState([]);
+  const router = useRouter();
   // submit form using formik
   const formik = useFormik({
     initialValues: {
@@ -43,17 +43,16 @@ const CreatePostForm = () => {
       console.log(values);
       // create form data and append it to the request body  (Note: replace '/blog' with your API endpoint)  // this assumes you have a '/blog' endpoint for creating a new blog post
       const formData = new FormData();
-      formData.append("title", values.title);
-      formData.append("short_des", values.short_des);
-      formData.append("content", values.content);
-      formData.append("image", values.image);
-      formData.append("category_id", values?.category?.category_id);
+      formData.append("name", values.title);
+      formData.append("comment", values.short_des); 
+      formData.append("image", values.image); 
 
       try {
-        const response = await privateRequest.post("admin/blog", formData);
+        const response = await privateRequest.post("admin/testimonial", formData);
         console.log(response);
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
+          router.push("/testimonial/testimonial");
         }
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -78,33 +77,13 @@ const CreatePostForm = () => {
   }, []);
   return (
     <Box>
-      <InfoBox page="Create Blog" href="/blog/blog" hrefName="View Blog" />
+      <InfoBox page="Create Testimonial" href="/testimonial/testimonial" hrefName="View Tesstimonial" />
       <Box sx={{ mx: "auto", p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
         <Typography variant="h4" gutterBottom>
           Create New Post
         </Typography>
         <form onSubmit={formik.handleSubmit}>
-          {/* combobox for autcomplete component for category id */}
-          <Autocomplete
-            disablePortal
-            options={category}
-            getOptionLabel={(option) => option.label || ""}
-            sx={{ mb: 2 }}
-            onChange={(event, value) => formik.setFieldValue("category", value)}
-            value={formik.values.category}
-            onBlur={() => formik.setFieldTouched("category", true)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Category Name"
-                // onBlur={formik.handleBlur}
-                error={
-                  formik.touched.category && Boolean(formik.errors.category)
-                }
-                helperText={formik.touched.category && formik.errors.category}
-              />
-            )}
-          />
+         
           {/* title  */}
           <TextField
             fullWidth
@@ -123,7 +102,7 @@ const CreatePostForm = () => {
             fullWidth
             id="short_des"
             name="short_des"
-            label="Short Description"
+            label="Comment"
             multiline
             minRows={3}
             value={formik.values.short_des}
@@ -133,21 +112,7 @@ const CreatePostForm = () => {
             helperText={formik.touched.short_des && formik.errors.short_des}
             sx={{ mb: 2 }}
           />
-
-          <Typography variant="body1" sx={{ mb: 1 }}>
-            Content
-          </Typography>
-          <ReactQuill
-            theme="snow"
-            value={formik.values.content}
-            onChange={(value) => formik.setFieldValue("content", value)}
-            onBlur={() => formik.setFieldTouched("content", true)}
-          />
-          {formik.touched.content && formik.errors.content && (
-            <Typography color="error" sx={{ mt: 1 }}>
-              {formik.errors.content}
-            </Typography>
-          )}
+ 
           <ProfilePicUpload formik={formik} />
           {formik.touched.image && formik.errors.image && (
             <Typography color="error">{formik.errors.image}</Typography>

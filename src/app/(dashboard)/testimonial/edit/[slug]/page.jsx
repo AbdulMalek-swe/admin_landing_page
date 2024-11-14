@@ -17,13 +17,12 @@ import { privateRequest, publicRequest } from "@/config/axios.config";
 import { errorHandler, responseCheck } from "@/utils/helper";
 import { Toastify } from "@/components/toastify";
 import InfoBox from "@/components/dynamicRoute/infoNav";
+import { useRouter } from "next/navigation";
 //  validate schema is already defined above. Here's how you might use it in your form:
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
-  short_des: Yup.string().required("Short description is required"),
-  content: Yup.string().required("Content is required"),
-  image: Yup.mixed().required("Image is required"),
-  category: Yup.object().nullable().required("category selection is required"),
+  short_des: Yup.string().required("Short description is required"), 
+  image: Yup.mixed().required("Image is required"), 
 });
 
 const EditPostForm = ({ params }) => {
@@ -31,10 +30,11 @@ const EditPostForm = ({ params }) => {
   const [blog, setBlog] = useState({});
   const [category, setCategory] = React.useState({});
   const [singleCategory, setSingleCategory] = React.useState({});
+  const router = useRouter();
   // fetch single blog
   const fetchBlog = useCallback(async () => {
     try {
-      const response = await publicRequest.get(`blog/${params?.slug}`);
+      const response = await privateRequest.get(`testimonial/${params?.slug}`);
       if (responseCheck(response)) {
         setBlog(response.data?.data);
       }
@@ -51,32 +51,30 @@ const EditPostForm = ({ params }) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      title: blog?.title || "",
-      short_des: blog?.short_des || "",
-      content: blog?.content || "",
-      image: blog?.image || null,
-      category: { ...singleCategory, label: singleCategory?.name || "" },
+      title: blog?.name || "",
+      short_des: blog?.comment|| "", 
+      image: blog?.image || null, 
     },
     validationSchema,
     onSubmit: async (values) => {
       const formData = new FormData();
-      formData.append("title", values.title);
-      formData.append("short_des", values.short_des);
-      formData.append("content", values.content);
-      formData.append("image", values.image);
-      formData.append("category_id", values?.category?.category_id);
+      formData.append("name", values.title);
+      formData.append("comment", values.short_des); 
+      formData.append("image", values.image); 
       formData.append("_method", "PUT");
       try {
         const response = await privateRequest.post(
-          `/blog/${params?.slug}`,
+          `admin/testimonial/${params?.slug}`,
           formData
         );
         console.log(response);
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
+          router.push(`/testimonial/testimonial`);
         }
       } catch (error) {
         console.error("Error submitting form:", error);
+        errorHandler(error);
       }
       // resetForm()
     },
@@ -106,33 +104,14 @@ const EditPostForm = ({ params }) => {
   }, [blog]);
   return (
     <Box>
-      <InfoBox page="Edit Blog" href="/blog/blog" hrefName="View Blog" />
+      <InfoBox page="Edit Testimonial" href="/testimonial/testimonial" hrefName="View Testimonial" />
       <Box sx={{ p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
         <Typography variant="h4" gutterBottom>
-          Create New Post
+          Edit Testimonial
         </Typography>
         <form onSubmit={formik.handleSubmit}>
           {/* combobox for autcomplete component for category id */}
-          <Autocomplete
-            disablePortal
-            options={category}
-            getOptionLabel={(option) => option.label || ""}
-            sx={{ mb: 2 }}
-            onChange={(event, value) => formik.setFieldValue("category", value)}
-            value={formik.values.category}
-            onBlur={() => formik.setFieldTouched("category", true)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Category Name"
-                // onBlur={formik.handleBlur}
-                error={
-                  formik.touched.category && Boolean(formik.errors.category)
-                }
-                helperText={formik.touched.category && formik.errors.category}
-              />
-            )}
-          />
+           
           <TextField
             fullWidth
             id="title"
@@ -150,7 +129,7 @@ const EditPostForm = ({ params }) => {
             fullWidth
             id="short_des"
             name="short_des"
-            label="Short Description"
+            label="Comment"
             multiline
             minRows={3}
             value={formik.values.short_des}
@@ -161,39 +140,8 @@ const EditPostForm = ({ params }) => {
             sx={{ mb: 2 }}
           />
 
-          <Typography variant="body1" sx={{ mb: 1 }}>
-            Content
-          </Typography>
-          <ReactQuill
-            theme="snow"
-            value={formik.values.content}
-            onChange={(value) => formik.setFieldValue("content", value)}
-            onBlur={() => formik.setFieldTouched("content", true)}
-          />
-          {formik.touched.content && formik.errors.content && (
-            <Typography color="error" sx={{ mt: 1 }}>
-              {formik.errors.content}
-            </Typography>
-          )}
-
-          {/* <Button
-            variant="contained"
-            component="label"
-            sx={{ mt: 2, mb: 2, width: "100%", cursor: "pointer" }}
-          >
-            Upload Image
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              onChange={(event) => {
-                formik.setFieldValue("image", event.currentTarget.files[0]);
-              }}
-            />
-          </Button> */}
-          {/* {formik.touched.image && formik.errors.image && (
-            <Typography color="error">{formik.errors.image}</Typography>
-          )} */}
+         
+          
           <ProfilePicUpload blog={blog} formik={formik} />
           <Button
             color="primary"
