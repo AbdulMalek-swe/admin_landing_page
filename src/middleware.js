@@ -19,12 +19,7 @@ export const config = {
   matcher: [
     '/dashboard/:path*',   
      // Protects all paths under /dashboard
-   '/blog/:path*', 
-   '/faq/:path*', 
-   '/project/:path*', 
-   '/company/:path*', 
-   '/testimonial/:path*', 
-   '/contact/:path*', 
+    
    
    // Protects all paths under /blog
   //  '/:path*', // Protects all paths under /blog
