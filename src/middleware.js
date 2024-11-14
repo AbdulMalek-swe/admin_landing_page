@@ -3,7 +3,7 @@ import { getToken } from './utils/helper';
 const isLoggedIn = true;
 export default async function middleware(req) { 
   // req.NextResponse.
-  const publicRoute = ["/dashboard","/blog","/faq","/contact"];
+  const publicRoute = ["/dashboard","/blog","/faq", "/project","/company","/testimonial","/contact","category"];
   const token  =  req.cookies.get('token')?.value?true:false;
   if(token && publicRoute.includes(req.nextUrl.pathname)  ){
     console.log("protected route",req.nextUrl.pathname);
@@ -19,9 +19,17 @@ export const config = {
   matcher: [
     '/dashboard/:path*',   
      // Protects all paths under /dashboard
-  //  '/blog/:path*', // Protects all paths under /blog
+   '/blog/:path*', 
+   '/faq/:path*', 
+   '/project/:path*', 
+   '/company/:path*', 
+   '/testimonial/:path*', 
+   '/contact/:path*', 
+   
+   // Protects all paths under /blog
   //  '/:path*', // Protects all paths under /blog
   //  "/((?!^$).*)",
-    // matcher: '/((?!api|static|.*\\..*|_next).*)'
+    // matcher: 
+    // '/((?!api|static|.*\\..*|_next).*)'
   ],
 };
