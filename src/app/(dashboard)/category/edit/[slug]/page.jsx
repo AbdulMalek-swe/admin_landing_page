@@ -41,7 +41,7 @@ const CategoryForm = ({params}) => {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        const response = await publicRequest.put(`category/${params?.slug}`, values);
+        const response = await privateRequest.put(`admin/category/${params?.slug}`, values);
         console.log(response);
         if (responseCheck(response)) {
           setLoading(false);

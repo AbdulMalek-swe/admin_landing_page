@@ -57,7 +57,7 @@ export default function DataTable() {
               onClick={async () => {
                 try {
                   const response = await privateRequest.delete(
-                    `category/${params?.row?.category_id}`
+                    `admin/category/${params?.row?.category_id}`
                   );
                   if (responseCheck(response)) {
                     fetchCategory();
