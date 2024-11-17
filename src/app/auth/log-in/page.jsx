@@ -37,6 +37,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   // submit login
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -55,6 +56,7 @@ const LoginPage = () => {
           Toastify.Success(response?.data?.message);
           setToken(response?.data?.data?.token);
           router.push("/dashboard");
+          window.location.reload();
         }
       } catch (error) {
         setLoading(false)
