@@ -1,8 +1,8 @@
 import { Toastify } from "@/components/toastify";
 
-const setCookie = (name, value, days) => {
+const setCookie = (name, value, time) => {
   const date = new Date();
-  date.setTime(date.getTime() + days * 1 * 60 * 60 * 1000); // Convert days to milliseconds
+  date.setTime(date.getTime() +  time); // Convert days to milliseconds
   const expires = `expires=${date.toUTCString()}`;
   document.cookie = `${name}=${value}; ${expires}; path=/; Secure; SameSite=Strict`;
 };
@@ -31,7 +31,7 @@ export const getToken = () => {
 
 /* set token */
 export const setToken = (token) => {
-  return setCookie("token", token, 1);
+  return setCookie("token", token, 1 * 60 * 60 * 1000);
   // return localStorage.setItem("token", token);
 };
 
