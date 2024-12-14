@@ -13,6 +13,7 @@ import {   usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, IconButton, TextField, Typography } from "@mui/material";
 import { removeToken } from "@/utils/helper";
+import Image from "next/image";
 
 const NAVIGATION = [
   {
@@ -57,6 +58,16 @@ const NAVIGATION = [
   {
     segment: "contact/contact",
     title: "Contact",
+    icon: <ShoppingCartIcon />,
+  } ,
+  {
+    segment: "SEO/landing/landing",
+    title: "Landing SEO",
+    icon: <ShoppingCartIcon />,
+  } ,
+  {
+    segment: "SEO/blog/blog",
+    title: "Blog SEO",
     icon: <ShoppingCartIcon />,
   } 
    
@@ -105,7 +116,7 @@ function useDemoRouter(initialPath) {
       navigate: (path) => setPathname(String(path)),
     };
   }, [pathname]);
-
+      console.log(router,pathname);
   return router;
 }
 // const Skeleton = styled("div")(({ theme, height }) => ({
@@ -130,8 +141,7 @@ function Search() {
 export default function DashboardLayoutBasic(props) {
   const { window, children } = props;
    const pathname = usePathname()
-  const router = useDemoRouter( pathname?pathname:"/dashboard");
-       console.log(router);
+  const router = useDemoRouter( pathname?pathname:"/dashboard"); 
   // Remove this const when copying and pasting into your project.
   const demoWindow = window ? window() : undefined;
 
@@ -140,15 +150,21 @@ export default function DashboardLayoutBasic(props) {
       // navigation={NAVIGATION}
       router={router}
       theme={demoTheme}
-      // window={demoWindow}
+      window={demoWindow}
       
       // session={session}
       // authentication={authentication}
       navigation={NAVIGATION}
-      // branding={{
-      //   logo: <img src="https://codingmstr.com/img/logo-white.png" alt="MUI logo" />,
-      //   title: 'CodingMSTR',
-      // }}
+      branding={{
+        logo: <Image width={100} height={100} src="/v.ico" alt="MUI logo" sx={{   
+        width: 28,
+        height: 28,
+        margin: "auto",
+      
+          borderRadius: 5,
+         }} />,
+        title: 'ZanVisionLabs',
+      }}
     >
       <DashboardLayout  slots={{ 
                 toolbarActions: Search, 
