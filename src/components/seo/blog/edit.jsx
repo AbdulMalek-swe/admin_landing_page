@@ -1,33 +1,44 @@
 "use client";
-import React, { Suspense } from "react"; 
+import React, { Suspense, useCallback, useEffect } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
-  TextField, 
+  TextField,
+  Button,
   Box,
   Typography,
   Avatar,
-  CircularProgress, 
+  CircularProgress,
 } from "@mui/material";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { Toastify } from "@/components/toastify";
+import { errorHandler, responseCheck } from "@/utils/helper";
+import { privateRequest } from "@/config/axios.config";
+import InfoBox from "@/components/dynamicRoute/infoNav";
+
  
-const SEOCreateForm = ({ formik}) => {
+
+const SEOCreateForm = ({ formik }) => {
    
   return (
     <Suspense fallback={<CircularProgress />}>
-      <Box
-        sx={{ p: 2, boxShadow: 2, borderRadius: 2 }}
-      >
-           
+      <Box sx={{ p: 2, boxShadow: 2, borderRadius: 2 }}>
+        
         <Typography variant="h4" align="center" gutterBottom>
-          Create SEO For this blog page
-        </Typography> 
-           
+          Edit Blog SEO For Landing page
+        </Typography>
+        <form onSubmit={formik.handleSubmit}>
+          {/* Page Name */}
+          
           {/* Title */}
           <FormField
             formik={formik}
             fieldName="seo_title"
-            label="SEO Title"
+            label="SE0Title"
             type="text"
           />
-
+ 
           {/* Description */}
           <FormField
             formik={formik}
@@ -74,7 +85,8 @@ const SEOCreateForm = ({ formik}) => {
 
           {/* OG Image */}
           <FileUpload formik={formik} fieldName="og_image" label="OG Image" />
-           
+          
+        </form>
       </Box>
     </Suspense>
   );
@@ -94,6 +106,7 @@ const FormField = ({ formik, fieldName, label, type, multiline, rows }) => (
       multiline={multiline}
       rows={rows}
       value={formik.values[fieldName]}
+      // value={formik.values.title}
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}
       error={formik.touched[fieldName] && Boolean(formik.errors[fieldName])}
@@ -138,7 +151,3 @@ const FileUpload = ({ formik, fieldName, label }) => {
     </Box>
   );
 };
-
- 
- 
- 

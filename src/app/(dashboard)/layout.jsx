@@ -64,12 +64,7 @@ const NAVIGATION = [
     segment: "SEO/landing/landing",
     title: "Landing SEO",
     icon: <ShoppingCartIcon />,
-  } ,
-  {
-    segment: "SEO/blog/blog",
-    title: "Blog SEO",
-    icon: <ShoppingCartIcon />,
-  } 
+  }  
    
 ];
 

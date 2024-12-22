@@ -19,19 +19,18 @@ import {
   useSearchParams,
 } from "next/navigation";
 import InfoBox from "@/components/dynamicRoute/infoNav";
-import { DataGrid } from "@mui/x-data-grid";
-import axios from "axios";
+import { DataGrid } from "@mui/x-data-grid"; 
 import { privateRequest } from "@/config/axios.config";
+import { Toastify } from "@/components/toastify";
+import { responseCheck } from "@/utils/helper";
 const SEO = () => {
   const search = useSearchParams();
   return <LandingSeo />;
-};
-
-export default SEO;
-
+}; 
+export default SEO; 
 function LandingSeo({ type = "landing" }) {
   const [metaData, setMetaData] = useState([]);
-  const fetchLandingSeo = async ()=>{
+  const fetchLandingSeo = async () => {
     privateRequest.get("/seo").then((res) => {
       console.log(res?.data?.data);
       const data = res?.data?.data.map((item) => {
@@ -43,7 +42,7 @@ function LandingSeo({ type = "landing" }) {
       const result = data.filter((item) => item?.type === type);
       setMetaData(result);
     });
-  }
+  };
   useEffect(() => {
     fetchLandingSeo();
   }, []);
@@ -78,7 +77,8 @@ function LandingSeo({ type = "landing" }) {
                   );
                   if (responseCheck(response)) {
                     fetchLandingSeo();
-                    Toastify.Success(response?.data?.message);
+
+                    Toastify.Success("successfully deleted SEO data! ");
                   }
                 } catch (error) {
                   console.log(error);
@@ -97,7 +97,7 @@ function LandingSeo({ type = "landing" }) {
   return (
     <Box>
       <InfoBox
-        page='Landing SEO'
+        page="Landing SEO"
         href="/SEO/landing/create"
         hrefName="Create SEO"
       />
@@ -107,7 +107,6 @@ function LandingSeo({ type = "landing" }) {
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[5, 10]}
-          // checkboxSelection
           sx={{ border: 0 }}
           showCellVerticalBorder
           width="100%"
@@ -116,4 +115,3 @@ function LandingSeo({ type = "landing" }) {
     </Box>
   );
 }
- 

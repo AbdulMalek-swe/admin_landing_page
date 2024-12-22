@@ -18,13 +18,24 @@ import { errorHandler, responseCheck } from "@/utils/helper";
 import { Toastify } from "@/components/toastify";
 import InfoBox from "@/components/dynamicRoute/infoNav";
 import { useRouter } from "next/navigation";
+import SEOCreateForm from "@/components/seo/blog/edit";
 //  validate schema is already defined above. Here's how you might use it in your form:
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   short_des: Yup.string().required("Short description is required"),
   content: Yup.string().required("Content is required"),
   // image: Yup.mixed().required("Image is required"),
-  category: Yup.object().nullable().required("category selection is required"),
+  // category: Yup.object().nullable().required("category selection is required"),
+  seo_title: Yup.string().required("Title is required"),
+  description: Yup.string().required("Description is required"),
+  og_title: Yup.string().required("OG Title is required"),
+  og_description: Yup.string().required("OG Description is required"),
+  // og_image: Yup.mixed().required("OG Image is required"),
+  canonical_tags: Yup.string().required("Canonical Tags are required"),
+  meta_robots: Yup.string().required("Meta Robots are required"),
+  // type: Yup.string().required("Type is required"),
+  // SEO_id: Yup.number().required("SEO ID is required").positive().integer(),
+  // page_name: Yup.string().required("Page Name is required"),
 });
 
 const EditPostForm = ({ params }) => {
@@ -49,6 +60,7 @@ const EditPostForm = ({ params }) => {
   useEffect(() => {
     fetchBlog();
   }, []);
+  const [seoSingleData, setSingleBlogSeo] = React.useState({});
   // submit blog edited form
   const formik = useFormik({
     enableReinitialize: true,
@@ -56,11 +68,22 @@ const EditPostForm = ({ params }) => {
       title: blog?.title || "",
       short_des: blog?.short_des || "",
       content: blog?.content || "",
-      image: blog?.image || null,
+      image:   null,
       category: { ...singleCategory, label: singleCategory?.name || "" },
+      seo_title: seoSingleData?.title || "",
+      description: seoSingleData?.description || "",
+      og_title: "" || seoSingleData?.og_title,
+      og_description: "" || seoSingleData?.og_description,
+      og_image: null,
+      canonical_tags: "" || seoSingleData?.canonical_tags,
+      meta_robots: "" || seoSingleData?.meta_robots,
+      type: "blog"  ,
+      // SEO_id: "" || seoSingleData?.SEO_id,
+      page_name: "" || seoSingleData?.page_name,
     },
     validationSchema,
     onSubmit: async (values) => {
+      console.log(values,"------------>");
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("short_des", values.short_des);
@@ -68,21 +91,23 @@ const EditPostForm = ({ params }) => {
       formData.append("image", values.image);
       formData.append("category_id", values?.category?.category_id);
       formData.append("_method", "PUT");
+      console.log(values);
       try {
         const response = await privateRequest.post(
           `admin/blog/${params?.slug}`,
           formData
         );
-        console.log(response);
+        // console.log(response);
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
-          router.push(`/blog/blog`);
+          editSeo(values);
+          // router.push(`/blog/blog`);
         }
       } catch (error) {
         console.error("Error submitting form:", error);
       }
       // resetForm()
-      formik.resetForm();
+      // formik.resetForm();
     },
   });
   // fetch category data
@@ -97,7 +122,7 @@ const EditPostForm = ({ params }) => {
           (item) => item?.category_id === categoryId
         );
         const data = result.map((item) => ({ ...item, label: item?.name }));
-        console.log(result, "this i scategroy area");
+        // console.log(result, "this i scategroy area");
         setCategory(data);
         setSingleCategory({ ...newValue, label: newValue?.name || "" });
       }
@@ -105,9 +130,58 @@ const EditPostForm = ({ params }) => {
       errorHandler(error);
     }
   }, [blog]);
+
   React.useEffect(() => {
     fetchCategory();
-  }, [blog]);
+    privateRequest.get("/seo").then((res) => {
+      console.log(res?.data?.data);
+      const data = res?.data?.data.map((item) => {
+        return {
+          ...item,
+          id: item?.seo_id,
+        };
+      });
+      const result = data.filter((item) => item?.type === "blog");
+      // filter result usign blog id
+      const blogId = params?.slug;
+      const results = result.find((item) => item?.blog_id === blogId);
+      console.log(results, "results---->", blogId);
+      setSingleBlogSeo(results);
+      // setMetaData(result);
+      // setMetaData(result);
+    });
+  }, []);
+  // create single blog seo area edit
+  const editSeo = async (values) => {
+    console.log("where is my values--================")
+    const formData = new FormData();
+    formData.append("title", values.seo_title);
+    formData.append("description", values.description);
+    formData.append("og_title", values.og_title);
+    formData.append("og_description", values.og_description);
+    formData.append("og_image", values.og_image);
+    formData.append("canonical_tags", values.canonical_tags);
+    formData.append("meta_robots", values.meta_robots);
+    formData.append("type", "blog");
+    formData.append("blog_id", params?.slug);
+    //   formData.append("SEO_id", values.SEO_id);
+    //   formData.append("page_name", values.page_name);
+    formData.append("_method", "PUT");
+    console.log(values);
+    try {
+      const response = await privateRequest.post(
+        `seo/${seoSingleData?.seo_id}`,
+        formData
+      );
+      if (responseCheck(response)) {
+        Toastify.Success(response.data.message);
+      }
+      console.log("Form submitted successfully:", values);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      errorHandler(error);
+    }
+  };
   return (
     <Box>
       <InfoBox page="Edit Blog" href="/blog/blog" hrefName="View Blog" />
@@ -180,25 +254,9 @@ const EditPostForm = ({ params }) => {
             </Typography>
           )}
 
-          {/* <Button
-            variant="contained"
-            component="label"
-            sx={{ mt: 2, mb: 2, width: "100%", cursor: "pointer" }}
-          >
-            Upload Image
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              onChange={(event) => {
-                formik.setFieldValue("image", event.currentTarget.files[0]);
-              }}
-            />
-          </Button> */}
-          {/* {formik.touched.image && formik.errors.image && (
-            <Typography color="error">{formik.errors.image}</Typography>
-          )} */}
           <ProfilePicUpload blog={blog} formik={formik} />
+          {/* seo edited area  */}
+          <SEOCreateForm  formik={formik}/>
           <Button
             color="primary"
             variant="contained"

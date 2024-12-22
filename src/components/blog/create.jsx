@@ -18,6 +18,7 @@ import { errorHandler, responseCheck } from "@/utils/helper";
 import { Toastify } from "@/components/toastify";
 import InfoBox from "../dynamicRoute/infoNav";
 import { useRouter } from "next/navigation";
+import SEOCreateForm from "../seo/blog/create";
 // validate schema
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
@@ -26,6 +27,13 @@ const validationSchema = Yup.object({
   image: Yup.mixed().required("Image is required"),
   // category_id: Yup.number().required("Category is required"),
   category: Yup.object().nullable().required("category selection is required"),
+   seo_title: Yup.string().required("Title is required"),
+    description: Yup.string().required("Description is required"),
+    og_title: Yup.string().required("OG Title is required"),
+    og_description: Yup.string().required("OG Description is required"),
+    og_image: Yup.mixed().required("OG Image is required"),
+    canonical_tags: Yup.string().required("Canonical Tags are required"),
+    meta_robots: Yup.string().required("Meta Robots are required"),
 });
 
 const CreatePostForm = () => {
@@ -40,10 +48,20 @@ const CreatePostForm = () => {
       content: "",
       image: null,
       category: null,
+      seo_title: "",
+      description: "",
+      og_title: "",
+      og_description: "",
+      og_image: null,
+      canonical_tags: "",
+      meta_robots: "",
+      // type: "",
+      // SEO_id: "",
+      // page_name: "",
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
+      // console.log(values);
       // create form data and append it to the request body  (Note: replace '/blog' with your API endpoint)  // this assumes you have a '/blog' endpoint for creating a new blog post
       const formData = new FormData();
       formData.append("title", values.title);
@@ -54,17 +72,46 @@ const CreatePostForm = () => {
 
       try {
         const response = await privateRequest.post("admin/blog", formData);
-         
+         console.log(response);
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
-          router.push("/blog/blog");
+          // router.push("/blog/blog");
+          // newSeoFunction()
+          console.log("----------------->sdf");
+          createSeoFunction({...values,blog_id:response.data.data.blog_id  });
         }
       } catch (error) {
+        console.log(error);
          errorHandler(error);
       }
-      formik.resetForm();
+      // formik.resetForm();
     },
   });
+  // make seo function here for SEO
+    const createSeoFunction=async(values)=>{
+      console.log(values,"weolcome to seo function");
+      const formData = new FormData();
+      formData.append("title", values.seo_title);
+      formData.append("description", values.description);
+      formData.append("og_title", values.og_title);
+      formData.append("og_description", values.og_description);
+      formData.append("og_image", values.og_image);
+      formData.append("canonical_tags", values.canonical_tags);
+      formData.append("meta_robots", values.meta_robots);
+      formData.append("type", "blog");
+      formData.append("blog_id", values?.blog_id);
+         try {
+              const response = await privateRequest.post("seo", formData);
+              console.log(response,"welcome to  ---------------->");
+              if (responseCheck(response)) {
+                Toastify.Success(response.data.message);
+              }
+              console.log("Form submitted successfully:", values);
+            } catch (error) {
+              console.log(error);
+              console.error("Error submitting form:", error);
+            }
+    }
   // fetch category data
   const fetchCategory = React.useCallback(async () => {
     try {
@@ -157,7 +204,9 @@ const CreatePostForm = () => {
           {formik.touched.image && formik.errors.image && (
             <Typography color="error">{formik.errors.image}</Typography>
           )}
-
+          {/* START blog seo form component here  */}
+             
+            <SEOCreateForm formik={formik}/>
           <Button
             color="primary"
             variant="contained"
