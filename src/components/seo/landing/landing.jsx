@@ -31,7 +31,7 @@ export default SEO;
 
 function LandingSeo({ type = "landing" }) {
   const [metaData, setMetaData] = useState([]);
-  useEffect(() => {
+  const fetchLandingSeo = async ()=>{
     privateRequest.get("/seo").then((res) => {
       console.log(res?.data?.data);
       const data = res?.data?.data.map((item) => {
@@ -43,6 +43,9 @@ function LandingSeo({ type = "landing" }) {
       const result = data.filter((item) => item?.type === type);
       setMetaData(result);
     });
+  }
+  useEffect(() => {
+    fetchLandingSeo();
   }, []);
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -74,7 +77,7 @@ function LandingSeo({ type = "landing" }) {
                     `seo/${params?.row?.seo_id}`
                   );
                   if (responseCheck(response)) {
-                    fetchFaqs();
+                    fetchLandingSeo();
                     Toastify.Success(response?.data?.message);
                   }
                 } catch (error) {

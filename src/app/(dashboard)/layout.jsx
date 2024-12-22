@@ -156,9 +156,9 @@ export default function DashboardLayoutBasic(props) {
       // authentication={authentication}
       navigation={NAVIGATION}
       branding={{
-        logo: <Image width={100} height={100} src="/v.ico" alt="MUI logo" sx={{   
-        width: 28,
-        height: 28,
+        logo: <Image  width={32} height={32} src="/v.ico" alt="MUI logo" sx={{   
+        width: 32,
+        height: 32,
         margin: "auto",
       
           borderRadius: 5,

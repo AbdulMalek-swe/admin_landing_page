@@ -1,7 +1,9 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { Suspense ,useState} from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { Select, MenuItem, FormControl, InputLabel, FormHelperText } from '@mui/material';
+
 import {
   TextField,
   Button,
@@ -26,8 +28,8 @@ const validationSchema = Yup.object({
   og_image: Yup.mixed().required("OG Image is required"),
   canonical_tags: Yup.string().required("Canonical Tags are required"),
   meta_robots: Yup.string().required("Meta Robots are required"),
-  type: Yup.string().required("Type is required"), 
-  page_name: Yup.string().required("Page Name is required"),
+  // type: Yup.string().required("Type is required"), 
+  page_name:  Yup.string().required('Please select an option'),
 });
 
 const SEOCreateForm = ({slug}) => {
@@ -40,11 +42,12 @@ const SEOCreateForm = ({slug}) => {
       og_image: null,
       canonical_tags: "",
       meta_robots: "",
-      type: "", 
-      page_name: "",
+      // type: "", 
+      page_name: "ddd",
     },
     validationSchema,
     onSubmit: async (values) => {
+      console.log(values,"------------------->");
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("description", values.description);
@@ -59,11 +62,13 @@ const SEOCreateForm = ({slug}) => {
 
       try {
         const response = await privateRequest.post("seo", formData);
+        console.log(response);
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
         }
         console.log("Form submitted successfully:", values);
       } catch (error) {
+        console.log(error);
         console.error("Error submitting form:", error);
       }
     },
@@ -82,21 +87,40 @@ const SEOCreateForm = ({slug}) => {
           Create SEO For Landing page
         </Typography>
         <form onSubmit={formik.handleSubmit}>
-          {/* Page Name */}
-          <FormField
-            formik={formik}
-            fieldName="page_name"
-            label="Page Name"
-            type="text"
-          />
-          {/* Title */}
+           {/* page name  for dropdown */}
+            <FormControl
+        fullWidth
+        error={formik.touched.page_name && Boolean(formik.errors.page_name)}
+        sx={{ marginBottom: 2 }}
+      >
+        <InputLabel id="page_name-label">Choose an page name</InputLabel>
+        <Select
+          labelId="page_name-label"
+          id="page_name"
+          name="page_name"
+          value={formik.values.page_name}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+        >
+          <MenuItem value="home">HOME</MenuItem>
+          <MenuItem value="service">SERVICE</MenuItem>
+          <MenuItem value="about">ABOUT</MenuItem>
+          <MenuItem value="blog">BLOG</MenuItem>
+          <MenuItem value="contact">CONTACT</MenuItem>
+        </Select>
+        {formik.touched.page_name && formik.errors.page_name && (
+          <FormHelperText>{formik.errors.page_name}</FormHelperText>
+        )}
+      </FormControl>  
+
+          {/* title */}
           <FormField
             formik={formik}
             fieldName="title"
-            label="Title"
+            label="title"
             type="text"
+             
           />
-
           {/* Description */}
           <FormField
             formik={formik}
@@ -216,3 +240,5 @@ const FileUpload = ({ formik, fieldName, label }) => {
     </Box>
   );
 };
+ 
+ 

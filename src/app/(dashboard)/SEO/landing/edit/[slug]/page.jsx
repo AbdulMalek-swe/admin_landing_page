@@ -28,7 +28,7 @@ const validationSchema = Yup.object({
   meta_robots: Yup.string().required("Meta Robots are required"),
   type: Yup.string().required("Type is required"),
   // SEO_id: Yup.number().required("SEO ID is required").positive().integer(),
-  page_name: Yup.string().required("Page Name is required"),
+  // page_name: Yup.string().required("Page Name is required"),
 });
 
 const SEOCreateForm = ({ params }) => {
@@ -45,7 +45,7 @@ const SEOCreateForm = ({ params }) => {
       meta_robots: "" || seoSingleData?.meta_robots,
       type: "" || seoSingleData?.type,
       // SEO_id: "" || seoSingleData?.SEO_id,
-      page_name: "" || seoSingleData?.page_name,
+      // page_name:   seoSingleData?.page_name,
     },
     validationSchema,
     // enableReinitialize: true,
@@ -60,7 +60,7 @@ const SEOCreateForm = ({ params }) => {
       formData.append("meta_robots", values.meta_robots);
       formData.append("type", "landing");
       //   formData.append("SEO_id", values.SEO_id);
-      formData.append("page_name", values.page_name);
+      formData.append("page_name", seoSingleData?.page_name);
       formData.append("_method", "PUT");
       console.log(values);
       try {
@@ -105,12 +105,12 @@ const SEOCreateForm = ({ params }) => {
         </Typography>
         <form onSubmit={formik.handleSubmit}>
           {/* Page Name */}
-          <FormField
+          {/* <FormField
             formik={formik}
             fieldName="page_name"
             label="page_name"
             type="text"
-          />
+          /> */}
        
           {/* Title */}
           <FormField

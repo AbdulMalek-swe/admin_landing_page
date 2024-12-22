@@ -6,7 +6,7 @@ const SEOCreateForm = dynamic(()=> import('@/components/seo/landing/create'), { 
 const Home = () => {
   return (
     <div>
-      <SEOCreateForm/>
+      <SEOCreateForm />
     </div>
   );
 };

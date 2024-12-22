@@ -19,9 +19,10 @@ import {
   useSearchParams,
 } from "next/navigation";
 import InfoBox from "@/components/dynamicRoute/infoNav";
-import { DataGrid } from "@mui/x-data-grid";
-import axios from "axios";
+import { DataGrid } from "@mui/x-data-grid"; 
 import { privateRequest } from "@/config/axios.config";
+import { Toastify } from "@/components/toastify";
+import { responseCheck } from "@/utils/helper";
 const SEO = () => {
   const search = useSearchParams();
   return <LandingSeo />;
@@ -74,7 +75,7 @@ function LandingSeo({ type = "blog" }) {
                     `seo/${params?.row?.seo_id}`
                   );
                   if (responseCheck(response)) {
-                    fetchFaqs();
+                    // fetchFaqs();
                     Toastify.Success(response?.data?.message);
                   }
                 } catch (error) {
