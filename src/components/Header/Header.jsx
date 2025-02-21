@@ -1,13 +1,16 @@
  
 import { removeToken } from "@/utils/helper";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { GiHamburgerMenu } from "react-icons/gi";
 
 export const Header = ({ sidebarOpen, setSidebarOpen }) => {
-  const navigate = useRouter();
+  const router = useRouter();
+  const pathname = usePathname();
   const logout = () => {
     removeToken();
-    navigate.push("/");
+    const redirectPath = pathname && pathname !== "/" ? `?pathname=${encodeURIComponent(pathname)}` : "";
+    router.push(`/auth/log-in${redirectPath}`);
+    // navigate.push("/");
   };
   const gradientStyle = {
     // background: "#E5E7E9",

@@ -24,20 +24,23 @@ const getCookie = (name) => {
 //   remove token from cookie
 const removeCookie = (name) => {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=Strict`;
-};
+}; 
 export const getToken = () => {
-  return getCookie("token");
+   
+ const token =  getCookie("zanvision_lab_landing_token");
+ console.log(token,"wel------->");
+  return  token;
 };
 
 /* set token */
 export const setToken = (token) => {
-  return setCookie("token", token, 1 * 60 * 60 * 1000);
+  return setCookie("zanvision_lab_landing_token", token, 1 * 60 * 60 * 1000);
   // return localStorage.setItem("token", token);
 };
 
 /* remove token */
 export const removeToken = () => {
-  return removeCookie("token");
+  return removeCookie("zanvision_lab_landing_token");
 };
 
 export const responseCheck = (response) => {

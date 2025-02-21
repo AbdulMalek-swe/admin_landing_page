@@ -1,22 +1,34 @@
-import { NextResponse } from 'next/server';
-import { getToken } from './utils/helper';
-const isLoggedIn = true;
-export default async function middleware(req) { 
-  // req.NextResponse.
-  const publicRoute = ["/dashboard","/blog","/faq", "/project","/company","/testimonial","/contact","category"];
-  const token  =  req.cookies.get('token')?.value?true:false;
-  if(token && publicRoute.includes(req.nextUrl.pathname)  ){
-    console.log("protected route",req.nextUrl.pathname);
+import { NextResponse } from "next/server";
+
+export default async function middleware(req) {
+  const publicRoutes = [
+    "/dashboard",
+    "/blog",
+    "/faq",
+    "/project",
+    "/company",
+    "/testimonial",
+    "/contact",
+    "/category",
+    "/auth/log-in",
+  ];
+
+  const token = !!req.cookies.get("zanvision_lab_landing_token")?.value;
+  const pathname = req.nextUrl.pathname;
+  //  if token and pathname is valid then it redirectexpected path 
+  if (token || publicRoutes.includes(pathname)) {
     return NextResponse.next();
   }
- 
-  return NextResponse.redirect(new URL("/auth/log-in",req.url))
-}
 
-// Matcher configuration
+  console.log("Redirecting to login page with pathname:-----", pathname);
+//  set query to path what it go to expected route 
+  const redirectUrl = new URL(`/auth/log-in`, req.url);
+  if (pathname !== "/") {
+    redirectUrl.searchParams.set("pathname", pathname);  
+  }
+  return NextResponse.redirect(redirectUrl);
+}
+ 
 export const config = {
-  // matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
-  matcher: [
-    '/dashboard/:path*',   
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],  
 };

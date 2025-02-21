@@ -21,7 +21,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { publicRequest } from "@/config/axios.config";
 import { errorHandler, getToken, responseCheck, setToken } from "@/utils/helper";
 import { Toastify } from "@/components/toastify";
-import { useRouter } from "next/navigation";
+import {   useRouter, useSearchParams } from "next/navigation";
 // validatate with yup
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -36,8 +36,14 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams()
+ 
+  const search = searchParams.get('pathname')
+   
+  console.log(search);
+  // console.log(path);
   // submit login
-
+  // const { pathname } = router.query;
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -55,8 +61,9 @@ const LoginPage = () => {
           setLoading(false);
           Toastify.Success(response?.data?.message);
           setToken(response?.data?.data?.token);
-          router.push("/dashboard");
-          window.location.reload();
+          // router.push("/dashboard");
+          router.push(search ? search : "/dashboard");
+          // window.location.reload();
         }
       } catch (error) {
         setLoading(false)
@@ -71,10 +78,10 @@ const LoginPage = () => {
   // token not then never coming here 
    useEffect(()=>{
     if(getToken()){
-      router.push('/dashboard');
+      router.push(search ? search : "/dashboard");
       return;
     }
-   },[router])
+   },[router,search])
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
