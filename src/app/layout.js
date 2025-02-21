@@ -1,8 +1,9 @@
  
 import localFont from "next/font/local";
 import "./globals.css";
-import "react-toastify/dist/ReactToastify.css"; 
-import Layout from "@/components/layout/layout";
+import "react-toastify/dist/ReactToastify.css";  
+import dynamic from 'next/dynamic'; 
+const Layout = dynamic(()=> import('@/components/layout/layout'), { ssr: false });
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
