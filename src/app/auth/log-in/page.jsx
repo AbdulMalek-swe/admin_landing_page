@@ -31,19 +31,12 @@ const validationSchema = Yup.object({
     .min(6, "Password should be of minimum 6 characters length")
     .required("Password is required"),
 });
-
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams()
- 
-  const search = searchParams.get('pathname')
-   
-  console.log(search);
-  // console.log(path);
-  // submit login
-  // const { pathname } = router.query;
+  const searchParams = useSearchParams() 
+  const search = searchParams.get('pathname') 
   const formik = useFormik({
     initialValues: {
       email: "",
