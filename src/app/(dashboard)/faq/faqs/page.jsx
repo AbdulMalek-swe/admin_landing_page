@@ -64,7 +64,7 @@ export default function DataTable() {
               onClick={async () => {
                 try {
                   const response = await privateRequest.delete(
-                    `faq/${params?.row?.frequently_id}`
+                    `admin/faq/${params?.row?.frequently_id}`
                   );
                   if (responseCheck(response)) {
                     fetchFaqs();
