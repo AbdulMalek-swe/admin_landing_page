@@ -5,11 +5,10 @@ import React, { useEffect, useRef, useState } from "react";
 import SidebarLinkGroup from "./Links";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import Link from "next/link";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import {   usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
-  const location = useRouter();
+const Sidebar = ({ sidebarOpen, setSidebarOpen }) => { 
   //   const { pathname } = location; 
   const pathname = usePathname() 
   const trigger = useRef(null);
@@ -67,7 +66,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <Link href="/" className="w-full flex justify-center py-2">
           {/* <img src={Logo} alt="Logo" className="h-20 w-[77px] aspect-[425/439]" /> */}
           <Image
-            src={"/logo/logo.jpg"}
+            src={"/v.ico"}
             width={70}
             height={70}
             className="rounded-full"

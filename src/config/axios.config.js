@@ -14,8 +14,7 @@ const publicRequest = axios.create({
 
 const privateRequest = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_ENDPOINT,
-}); 
- console.log(process.env.NEXT_PUBLIC_API_ENDPOINT,"this is not my rews");
+});  
 /* Public request config */
 publicRequest.interceptors.request.use(
     async (config) => {

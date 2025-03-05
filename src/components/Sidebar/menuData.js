@@ -1,57 +1,58 @@
-import DashboardIcon from "@mui/icons-material/Dashboard";
+ 
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { FaTachometerAlt, FaFlag, FaPenSquare, FaThList, FaProjectDiagram, FaRegCommentDots, FaQuestionCircle, FaBuilding, FaAddressBook, FaSearch } from 'react-icons/fa';
 
 export const menuData = [
    
   {
     path: "/dashboard",
     title: "Dashboard",
-    icon: <DashboardIcon />,
+    icon: <FaTachometerAlt /> ,
   },
   {
     path: "/banner",
     title: "Banner",
-    icon: <DashboardIcon />,
+    icon: <FaFlag />,
   },
   {
     path: "/blog/blog",
     title: "Blog",
-    icon: <ShoppingCartIcon />,
+    icon: <FaPenSquare />,
   },
   {
     path: "/category/category",
     title: "Category",
-    icon: <ShoppingCartIcon />,
+    icon: <FaThList />,
   },
   {
     path: "/project/project",
     title: "Project",
-    icon: <ShoppingCartIcon />,
+    icon: <FaProjectDiagram /> ,
   },
   {
     path: "/testimonial/testimonial",
     title: "Testimonial",
-    icon: <ShoppingCartIcon />,
+    icon: <FaRegCommentDots />,
   },
   {
     path: "/faq/faqs",
     title: "Faq",
-    icon: <ShoppingCartIcon />,
+    icon: <FaQuestionCircle />,
   },
   {
     path: "/company/company",
     title: "Company",
-    icon: <ShoppingCartIcon />,
+    icon: <FaBuilding />,
   },
   {
     path: "/contact/contact",
     title: "Contact",
-    icon: <ShoppingCartIcon />,
+    icon:<FaAddressBook />,
   },
   {
     path: "/SEO/landing/landing",
     title: "Landing SEO",
-    icon: <ShoppingCartIcon />,
+    icon:<FaSearch />,
   },
   
 ];

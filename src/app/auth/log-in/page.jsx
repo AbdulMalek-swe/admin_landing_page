@@ -44,13 +44,13 @@ const LoginPage = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      setLoading(true);
+      // setLoading(true);
       try {
        
         const response = await publicRequest.post("login", values);
         console.log(response);
         if (responseCheck(response)) {
-          router.push("/dashboard");
+          // router.push("/dashboard");
           setLoading(false);
           Toastify.Success(response?.data?.message);
           setToken(response?.data?.data?.token);

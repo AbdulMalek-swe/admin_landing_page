@@ -27,14 +27,13 @@ const removeCookie = (name) => {
 }; 
 export const getToken = () => {
    
- const token =  getCookie("zanvision_lab_landing_token");
- console.log(token,"wel------->");
+ const token =  getCookie("zanvision_lab_landing_token"); 
   return  token;
 };
 
 /* set token */
 export const setToken = (token) => {
-  return setCookie("zanvision_lab_landing_token", token, 1 * 60 * 60 * 1000);
+  return setCookie("zanvision_lab_landing_token", token, 7 * 60 * 60 * 1000);
   // return localStorage.setItem("token", token);
 };
 
