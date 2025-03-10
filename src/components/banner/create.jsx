@@ -24,6 +24,7 @@ import { privateRequest } from "@/config/axios.config";
 import { errorHandler, responseCheck } from "@/utils/helper";
 import { Toastify } from "@/components/toastify";
 import InfoBox from "@/components/dynamicRoute/infoNav";
+import { useRouter } from "next/navigation";
  
 // Updated validation schema
 const validationSchema = Yup.object({
@@ -32,7 +33,7 @@ const validationSchema = Yup.object({
 
 const ProjectCreatePostForm = () => {
   const [category, setCategory] = React.useState([]);
-  
+  const router = useRouter();
   // Formik setup
   const formik = useFormik({
     initialValues: {
@@ -40,23 +41,24 @@ const ProjectCreatePostForm = () => {
       short_des: "",
       description: "", 
       thumbnail_image: null, 
-      page_name:""
+      // page_name:""
     },
     validationSchema,
     onSubmit: async (values) => {
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("content", values.short_des);
-      formData.append("button_text", values.description); 
-      formData.append("banner_name", values.banner_name); 
+      formData.append("button_text", "Contact Us"); 
+      // formData.append("banner_name", values.banner_name); 
       formData.append("banner_name", values.page_name); 
-      formData.append("image", values.thumbnail_image);
+     formData.append("image", values.thumbnail_image); 
       // values.multiple_images.forEach((file) => formData.append("multiple_images", file));
     
       try {
         const response = await privateRequest.post("/banner", formData);
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
+            router.push("/banner")
         }
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -70,7 +72,7 @@ const ProjectCreatePostForm = () => {
   return (
     <Suspense fallback={<CircularProgress />}>
     <Box>
-      <InfoBox page="Create Blog" href="/blog/blog" hrefName="View Blog" />
+      <InfoBox page="Create Banner" href="/banner" hrefName="View Baner" />
       <Box sx={{ mx: "auto", p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
         <Typography variant="h4" gutterBottom>
           Create New Post
@@ -128,28 +130,7 @@ const ProjectCreatePostForm = () => {
             helperText={formik.touched.short_des && formik.errors.short_des}
             sx={{ mb: 2 }}
           />
-          <TextField
-            fullWidth
-            id="description"
-            name="description"
-            label="Button Text"
-          
-            value={formik.values.description}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.description && Boolean(formik.errors.description)}
-            helperText={formik.touched.description && formik.errors.description}
-            sx={{ mb: 2 }}
-          />
- 
-          {formik.touched.description && formik.errors.description && (
-            <Typography color="error" sx={{ mt: 1 }}>
-              {formik.errors.description}
-            </Typography>
-          )}
-
-         
-
+            
           <ProfilePicUpload formik={formik} fieldName="thumbnail_image" label="Thumbnail Image" />
         
           <Button color="primary" variant="contained" fullWidth type="submit" sx={{ mt: 2 }}>

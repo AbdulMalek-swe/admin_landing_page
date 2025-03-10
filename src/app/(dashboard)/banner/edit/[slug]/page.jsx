@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { Suspense, useCallback, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -12,6 +12,11 @@ import {
   Avatar,
   Checkbox,
   FormControlLabel,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
 } from "@mui/material";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -19,62 +24,85 @@ import { privateRequest } from "@/config/axios.config";
 import { errorHandler, responseCheck } from "@/utils/helper";
 import { Toastify } from "@/components/toastify";
 import InfoBox from "@/components/dynamicRoute/infoNav";
+import { useRouter } from "next/navigation";
  
 // Updated validation schema
 const validationSchema = Yup.object({
-  title: Yup.string().required("Title is required"),
-  short_des: Yup.string().required("Short description is required"),
-  description: Yup.string().required("Description is required"), 
-  thumbnail_image: Yup.mixed().required("Thumbnail image is required"),
-  multiple_images: Yup.array().of(Yup.mixed()).required("At least one image is required"), 
+  title: Yup.string().required("Title is required"), 
 });
-
-const CreatePostForm = () => {
-  const [category, setCategory] = React.useState([]);
-  
-  // Formik setup
-  const formik = useFormik({
-    initialValues: {
-      title: "",
-      short_des: "",
-      description: "", 
-      thumbnail_image: null,
-      multiple_images: [],
+const CreatePostForm = ({params}) => {
+  const [banner, setBanner] = React.useState([]);
+  const router = useRouter();
+    const fetchBlog = useCallback(async () => {
+       try {
+         const response = await privateRequest.get(`/banner/${params?.slug}`);
+         if (responseCheck(response)) {
+          setBanner(response.data?.data);
+         }
+       } catch (error) {
+         errorHandler(error);
+       } finally {
+        //  setLoading(false);
+       }
+     }, [params?.slug]);
+     useEffect(() => {
+       fetchBlog();
+     }, []);
+   const formik = useFormik({
+    enableReinitialize: true,
+     initialValues: {
+       title: banner?.title||"",
+       short_des:banner?.content|| "",
+       description: "", 
+       thumbnail_image: null,  
+     },
+     validationSchema,
+     onSubmit: async (values) => {
+       const formData = new FormData();
+       formData.append("title", values.title);
+       formData.append("content", values.short_des);
+       formData.append("button_text", "contact us"); 
+      //  formData.append("banner_name", values.banner_name); 
+       formData.append("banner_name", banner?.banner_name); 
+      { values.thumbnail_image &&  formData.append("image", values.thumbnail_image);} 
+       formData.append("_method", "PUT");
+       // values.multiple_images.forEach((file) => formData.append("multiple_images", file));
      
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      const formData = new FormData();
-      formData.append("title", values.title);
-      formData.append("short_des", values.short_des);
-      formData.append("description", values.description); 
-      formData.append("thumbnail_image", values.thumbnail_image);
-      values.multiple_images.forEach((file) => formData.append("multiple_images", file));
-    
-      try {
-        const response = await privateRequest.post("admin/project", formData);
-        if (responseCheck(response)) {
-          Toastify.Success(response.data.message);
-        }
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        errorHandler(error);
-      }
-    },
-  });
+       try {
+         const response = await privateRequest.post(`/banner/${params?.slug}`, formData);
+         if (responseCheck(response)) {
+           Toastify.Success(response.data.message);
+           router.push(`/banner`);
+         }
+       } catch (error) {
+         console.error("Error submitting form:", error);
+         errorHandler(error);
+       }
+     },
+   });
 
  
 
   return (
     <Box>
-      <InfoBox page="Create Blog" href="/blog/blog" hrefName="View Blog" />
+      <InfoBox page="Create Blog" href="/banner" hrefName="View Banner" />
       <Box sx={{ mx: "auto", p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
         <Typography variant="h4" gutterBottom>
           Create New Post
         </Typography>
         <form onSubmit={formik.handleSubmit}>
           
-
+        <FormControl
+        fullWidth
+        error={formik.touched.page_name && Boolean(formik.errors.page_name)}
+        sx={{ marginBottom: 2 }}
+      >
+        <InputLabel id="page_name-label">Choose an page name</InputLabel>
+       
+        {formik.touched.page_name && formik.errors.page_name && (
+          <FormHelperText>{formik.errors.page_name}</FormHelperText>
+        )}
+      </FormControl>  
           <TextField
             fullWidth
             id="title"
@@ -92,9 +120,8 @@ const CreatePostForm = () => {
             fullWidth
             id="short_des"
             name="short_des"
-            label="Short Description"
-            multiline
-            minRows={3}
+            label="Content"
+          
             value={formik.values.short_des}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -102,27 +129,11 @@ const CreatePostForm = () => {
             helperText={formik.touched.short_des && formik.errors.short_des}
             sx={{ mb: 2 }}
           />
-
-          <Typography variant="body1" sx={{ mb: 1 }}>
-            Description
-          </Typography>
-          <ReactQuill
-            theme="snow"
-            value={formik.values.description}
-            onChange={(value) => formik.setFieldValue("description", value)}
-            onBlur={() => formik.setFieldTouched("description", true)}
-          />
-          {formik.touched.description && formik.errors.description && (
-            <Typography color="error" sx={{ mt: 1 }}>
-              {formik.errors.description}
-            </Typography>
-          )}
-
+            
          
 
           <ProfilePicUpload formik={formik} fieldName="thumbnail_image" label="Thumbnail Image" />
-          <FileUpload formik={formik} fieldName="multiple_images" label="Upload Multiple Images" multiple />
-
+        
           <Button color="primary" variant="contained" fullWidth type="submit" sx={{ mt: 2 }}>
             Submit
           </Button>

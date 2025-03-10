@@ -75,7 +75,7 @@ const CreatePostForm = () => {
          console.log(response);
         if (responseCheck(response)) {
           Toastify.Success(response.data.message);
-          // router.push("/blog/blog");
+          router.push("/blog/blog");
           // newSeoFunction()
           console.log("----------------->sdf");
           createSeoFunction({...values,blog_id:response.data.data.blog_id  });

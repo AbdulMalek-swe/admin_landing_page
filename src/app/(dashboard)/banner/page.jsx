@@ -38,10 +38,7 @@ export default function DataTable() {
   console.log(process.env.NEXT_PUBLIC_BASE_API);
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "title", headerName: "Title", flex: 1 },
-    
-    { field: "button_text", headerName: "Button_text", flex: 1 },
-    
+    { field: "title", headerName: "Title", flex: 1 }, 
     {
       field: "image",
       headerName: "Image",
@@ -98,8 +95,8 @@ export default function DataTable() {
               color="error"
               onClick={async () => {
                 try {
-                  const response = await publicRequest.delete(
-                    `admin/banner/${params?.row?.banner_id}`
+                  const response = await privateRequest.delete(
+                    `/banner/${params?.row?.banner_id}`
                   );
                   if (responseCheck(response)) {
                     fetchFaqs();
@@ -133,7 +130,7 @@ export default function DataTable() {
   }
   return (
     <Box>
-      <InfoBox page="Blog" href="/banner/create" hrefName="Create Banner" />
+      <InfoBox page="Banner" href="/banner/create" hrefName="Create Banner" />
       <Paper sx={{ height: 400, width: "100%", overflowX: "auto" }}>
         <DataGrid
           rows={blog}
